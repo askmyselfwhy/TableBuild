@@ -43,8 +43,7 @@ class App extends Component {
       rowSpan: obj.children ? 1 : rowspan
     }));
   }
-  buildTable() {
-    const { tableData } = this.state;
+  buildTableHeaders(tableData) {
     let depths = tableData.title.map(title => this.getDepth(title, 0));
     let maxDepth = this.getMax(depths);
     let rowsNumber = maxDepth + 1;
@@ -86,19 +85,22 @@ class App extends Component {
     }
     return rowsToRender;
   }
+  buildTable(tableData) {
+    return <table border="1">
+      <thead>
+        {this.buildTableHeaders(tableData).map(row => row)}
+      </thead>
+      <tbody>
+        {tableData.content.map(row => <tr>{row.map(col => <td>{col || '-'}</td>)}</tr>)}
+      </tbody>
+    </table>
+  }
   render() {
     const { tableData } = this.state;
     return (
       <div className="App">
         {tableData ?
-          <table border="1">
-            <thead>
-              {this.buildTable().map(row => row)}
-            </thead>
-            <tbody>
-              {tableData.content.map(row => <tr>{row.map(col => <td>{col || '-'}</td>)}</tr>)}
-            </tbody>
-          </table>
+          this.buildTable(tableData)
           :
           <div>Loading...</div>
         }
