@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { getMax } from './_helpers';
 import './App.css';
 
 class App extends Component {
@@ -8,10 +9,6 @@ class App extends Component {
         {value}
       </td>
     );
-  }
-
-  static getMax(arr) {
-    return Math.max.apply(null, arr);
   }
 
   constructor() {
@@ -31,7 +28,7 @@ class App extends Component {
     let maxDepth = 0;
     if (obj.children) {
       const depths = obj.children.map(child => this.getDepth(child, prevDepth + 1));
-      maxDepth = this.getMax(depths);
+      maxDepth = getMax(depths);
     }
     return obj.children ? maxDepth : prevDepth;
   }
@@ -48,7 +45,7 @@ class App extends Component {
   getCell({ obj, rowsNumber, depthLevel }) {
     const colSpan = this.getWide(obj);
     const rowSpan = rowsNumber - this.getDepth(obj, depthLevel);
-    return this.makeTd(obj.value, {
+    return App.makeTd(obj.value, {
       valign: 'top',
       colSpan: colSpan === 1 ? null : colSpan,
       rowSpan: obj.children ? null : rowSpan,
@@ -57,7 +54,7 @@ class App extends Component {
 
   buildTableHeaders(tableData) {
     const depths = tableData.title.map(title => this.getDepth(title, 1));
-    const maxDepth = this.getMax(depths);
+    const maxDepth = getMax(depths);
     const children = [...tableData.title];
     const rowsToRender = [];
 
@@ -65,7 +62,7 @@ class App extends Component {
       const cells = [];
       for (let j = 0; j < tableData.title.length; j += 1) {
         const title = children[j];
-        // if (title === null) { continue; }
+        if (title === null) { continue; }
         // Если обходится массив
         if (title.length) {
           children[j] = null;
@@ -107,7 +104,7 @@ class App extends Component {
         <tbody>
           {tableData.content.map((row, index) => (
             <tr key={index}>
-              {row.map(col => this.makeTd(col || '-', { id: col + Math.random() }))}
+              {row.map(col => App.makeTd(col || '-', { id: col + Math.random() }))}
             </tr>
           ))}
         </tbody>
