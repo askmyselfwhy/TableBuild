@@ -66,19 +66,17 @@ class App extends Component {
       for (let j = 0; j < tableData.title.length; j += 1) {
         const title = children[j];
         // Обход массива детей
-        if (title && title.length) {
-          children[j] = null;
-          for (let k = 0; k < title.length; k += 1) {
-            const currentTitle = title[k];
-            cells.push(this.getCell({
-              obj: currentTitle,
-              rowsNumber: maxDepth,
-              depthLevel: i,
-            }));
-            if (currentTitle.children) {
-              children[j] = children[j] ? children[j].concat(currentTitle.children)
-                : currentTitle.children;
-            }
+        children[j] = [];
+        for (let k = 0; k < title.length; k += 1) {
+          const currentTitle = title[k];
+          cells.push(this.getCell({
+            obj: currentTitle,
+            rowsNumber: maxDepth,
+            depthLevel: i,
+          }));
+          if (currentTitle.children) {
+            children[j] = children[j] ? children[j].concat(currentTitle.children)
+              : currentTitle.children;
           }
         }
       }
