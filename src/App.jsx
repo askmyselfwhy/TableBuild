@@ -46,7 +46,6 @@ class App extends Component {
     const colSpan = this.getWide(obj);
     const rowSpan = rowsNumber - this.getDepth(obj, depthLevel);
     return App.makeTd(obj.value, {
-      valign: 'top',
       colSpan: colSpan === 1 ? null : colSpan,
       rowSpan: obj.children ? null : rowSpan,
     });
@@ -55,39 +54,32 @@ class App extends Component {
   buildTableHeaders(tableData) {
     const depths = tableData.title.map(title => this.getDepth(title, 1));
     const maxDepth = getMax(depths);
-    const children = [...tableData.title];
     const rowsToRender = [];
+    const children = [];
+
+    for (let i = 0; i < tableData.title.length; i += 1) {
+      children[i] = [tableData.title[i]];
+    }
 
     for (let i = 0; i < maxDepth; i += 1) {
       const cells = [];
       for (let j = 0; j < tableData.title.length; j += 1) {
         const title = children[j];
-        if (title === null) { continue; }
-        // Если обходится массив
-        if (title.length) {
+        // Обход массива детей
+        if (title && title.length) {
           children[j] = null;
           for (let k = 0; k < title.length; k += 1) {
             const currentTitle = title[k];
-            if (currentTitle.value) {
-              cells.push(this.getCell({
-                obj: currentTitle,
-                rowsNumber: maxDepth,
-                depthLevel: i,
-              }));
-              if (currentTitle.children) {
-                children[j] = children[j] ? children[j].concat(currentTitle.children)
-                  : currentTitle.children;
-              }
+            cells.push(this.getCell({
+              obj: currentTitle,
+              rowsNumber: maxDepth,
+              depthLevel: i,
+            }));
+            if (currentTitle.children) {
+              children[j] = children[j] ? children[j].concat(currentTitle.children)
+                : currentTitle.children;
             }
           }
-          // Если обходится 1 объект
-        } else {
-          cells.push(this.getCell({
-            obj: title,
-            rowsNumber: maxDepth,
-            depthLevel: i,
-          }));
-          children[j] = title.children ? [...title.children] : null;
         }
       }
       rowsToRender.push(<tr key={i}>{cells}</tr>);
@@ -98,10 +90,10 @@ class App extends Component {
   buildTable(tableData) {
     return (
       <table border="1" className="app__table">
-        <thead>
+        <thead valign="middle" align="middle">
           {this.buildTableHeaders(tableData).map(row => row)}
         </thead>
-        <tbody>
+        <tbody valign="middle" align="middle">
           {tableData.content.map((row, index) => (
             <tr key={index}>
               {row.map(col => App.makeTd(col || '-', { id: col + Math.random() }))}
