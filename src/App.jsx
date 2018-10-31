@@ -5,7 +5,7 @@ import './App.css';
 class App extends Component {
   static makeTd(value, options) {
     return (
-      <td {...options} key={options.id || value}>
+      <td {...options.props} key={options.id}>
         {value}
       </td>
     );
@@ -46,8 +46,11 @@ class App extends Component {
     const colSpan = this.getWide(obj);
     const rowSpan = rowsNumber - this.getDepth(obj, depthLevel);
     return App.makeTd(obj.value, {
-      colSpan: colSpan === 1 ? null : colSpan,
-      rowSpan: obj.children ? null : rowSpan,
+      props: {
+        colSpan: colSpan === 1 ? null : colSpan,
+        rowSpan: obj.children ? null : rowSpan,
+      },
+      id: obj.value + colSpan + rowSpan,
     });
   }
 
@@ -55,11 +58,7 @@ class App extends Component {
     const depths = tableData.title.map(title => this.getDepth(title, 1));
     const maxDepth = getMax(depths);
     const rowsToRender = [];
-    const children = [];
-
-    for (let i = 0; i < tableData.title.length; i += 1) {
-      children[i] = [tableData.title[i]];
-    }
+    const children = tableData.title.map(title => [title]);
 
     for (let i = 0; i < maxDepth; i += 1) {
       const cells = [];
@@ -82,6 +81,7 @@ class App extends Component {
       }
       rowsToRender.push(<tr key={i}>{cells}</tr>);
     }
+
     return rowsToRender;
   }
 
@@ -92,9 +92,9 @@ class App extends Component {
           {this.buildTableHeaders(tableData).map(row => row)}
         </thead>
         <tbody valign="middle" align="middle">
-          {tableData.content.map((row, index) => (
-            <tr key={index}>
-              {row.map(col => App.makeTd(col || '-', { id: col + Math.random() }))}
+          {tableData.content.map((row, rowIndex) => (
+            <tr key={row}>
+              {row.map((col, colIndex) => App.makeTd(col || '-', { props: {}, id: (col + rowIndex + colIndex) }))}
             </tr>
           ))}
         </tbody>
