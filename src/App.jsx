@@ -55,34 +55,37 @@ class App extends Component {
   }
 
   buildTableHeaders(tableData) {
+    const numberOfCells = tableData.title.length;
     const depths = tableData.title.map(title => this.getDepth(title, 1));
     const maxDepth = getMax(depths);
-    const rowsToRender = [];
+    const cellsByRow = Array(...Array(numberOfCells)).map(() => []);
     const children = tableData.title.map(title => [title]);
 
-    for (let i = 0; i < maxDepth; i += 1) {
-      const cells = [];
-      for (let j = 0; j < tableData.title.length; j += 1) {
-        const title = children[j];
+    for (let i = 0; i < numberOfCells; i += 1) {
+      const depth = depths[i];
+      for (let j = 0; j < depth; j += 1) {
+        const cells = [];
+        const title = children[i];
+        children[i] = [];
+
         // Обход массива детей
-        children[j] = [];
         for (let k = 0; k < title.length; k += 1) {
           const currentTitle = title[k];
           cells.push(this.getCell({
             obj: currentTitle,
             rowsNumber: maxDepth,
-            depthLevel: i,
+            depthLevel: j,
           }));
           if (currentTitle.children) {
-            children[j] = children[j] ? children[j].concat(currentTitle.children)
+            children[i] = children[i] ? children[i].concat(currentTitle.children)
               : currentTitle.children;
           }
         }
+        cellsByRow[j].push(cells);
       }
-      rowsToRender.push(<tr key={i}>{cells}</tr>);
     }
 
-    return rowsToRender;
+    return cellsByRow.map((cells, index) => <tr key={index}>{cells}</tr>);
   }
 
   buildTable(tableData) {

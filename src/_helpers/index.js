@@ -1,1 +1,1 @@
-export const getMax = arr => Math.max.apply(null, arr);
+export const getMax = arr => Math.max(...arr);
